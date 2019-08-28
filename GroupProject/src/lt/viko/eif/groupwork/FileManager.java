@@ -1,8 +1,11 @@
 package lt.viko.eif.groupwork;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Set;
@@ -23,8 +26,65 @@ import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
 
 public class FileManager {
+	
+	//Gets file from uploadFile function and saves it to a folder
+	public static String saveFile(InputStream uploadedInputStream, FormDataContentDisposition fileDetails, String id, String password) throws Exception
+	{
+		//Temp save directory
+		String uploadedFileLocation = "C:/Users/Dominykas Jurkus/Desktop/temp/"  + "FileToEncrypt.txt";
+		
+        //Saving file to temp
+        try {
+			OutputStream out = new FileOutputStream(new File(uploadedFileLocation));
+			
+			int read = 0;
+			byte[] bytes = new byte[1024];
+			
+			out = new FileOutputStream(new File(uploadedFileLocation));
+			
+			while ((read = uploadedInputStream.read(bytes)) != -1)
+			{
+				out.write(bytes, 0, read);
+			}
+			
+			out.flush();
+			out.close();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+        
+        // Encrypt File
+        FileEncryption.encryptFile(password);
+		
+		return FileManager.saveFileToDatabase(fileDetails, id);
+	}
+	
+	public static Response downloadFile(String id) throws Exception
+	{	
+		Response response = null;
+		String fileName = FileEncryption.decryptFile(downloadFileFromDatabaseByIDToTemp(id));
+		
+		if(fileName == null)
+		{
+			response = Response.status(404).
+					entity(" Unable to get file with ID: " + id).
+					type("text/plain").
+					build();
+		}
+		else
+		{
+			File file = new File("C:/Users/Dominykas Jurkus/Desktop/temp/downloaded - " + fileName);
+			 
+	        ResponseBuilder builder = Response.ok((Object) file);
+	        builder.header("Content-Disposition", "attachment; filename=\"test_text_file.txt\"");
+	        response = builder.build();
+        }
+		
+		return response;
+	}
 
-	public static String saveFile(InputStream uploadedInputStream, FormDataContentDisposition fileDetails, String id)
+	public static String saveFileToDatabase(FormDataContentDisposition fileDetails, String id) throws Exception
 	{	
 		try {
 			MongoClient mongoClient = new MongoClient("localhost", 27017);
@@ -53,17 +113,21 @@ public class FileManager {
 				// Now let's store the binary file data using filestore GridFS  
 				GridFS fileStore = new GridFS(mongoDB, "filestorage");
 				
-				GridFSInputFile inputFile = fileStore.createFile(uploadedInputStream);
+				File encryptedFile = new File("C:/Users/Dominykas Jurkus/Desktop/temp/EncryptedFile.aes");
+				
+				GridFSInputFile inputFile = fileStore.createFile(encryptedFile);
 				
 				inputFile.setId(id);
 				inputFile.setFilename(fileDetails.getFileName());
 				inputFile.save();
 				
+				encryptedFile.delete();
+				
 				return "Upload has been successful";
 			} 
 		    else 
 		    {
-				String status = "Unable to insert record with ID: " + id +" as record already exists!!!";
+				String status = "Unable to insert record with ID: " + id +" as record already exists!";
 				return status;
 			}
 		    
@@ -73,10 +137,9 @@ public class FileManager {
 		}
 	}
 	
-	public static Response downloadFilebyID(String id)
+	public static String downloadFileFromDatabaseByIDToTemp(String id)
 	{
 		try {
-			Response response = null;
 			MongoClient mongoClient = new MongoClient("localhost", 27017);
 			DB mongoDB = mongoClient.getDB("groupproject");
 			    
@@ -112,29 +175,29 @@ public class FileManager {
 					data = in.read();
 				}
 				out.flush();
-					  
-				ResponseBuilder builder = Response.ok(out.toByteArray());
-				builder.header("Content-Disposition", "attachment; filename=" + fields.get("filename"));
-				response = builder.build();
+				
+				//Save to temp folder the encrypted file from DB
+				ByteArrayOutputStream byteArrayOutputStream = out;
+				try(OutputStream outputStream = new FileOutputStream("C:/Users/Dominykas Jurkus/Desktop/temp/" + fields.get("filename"))) {
+				    byteArrayOutputStream.writeTo(outputStream);
+				}
+				
+				out.close();
+				
+				return fields.get("filename");
 			} 
-			else 
+			else
 			{
-				response = Response.status(404).
-				entity(" Unable to get file with ID: " + id).
-				type("text/plain").
-				build();
+				return null;
 			}
-			
-			return response;
-			
 		} catch(IOException e)
 		{
-			Response response = Response.status(404).
-					entity("Failed to connect to database").
-					type("text/plain").
-					build();
-			
-			return response;
+			return null;
 		}
+	}
+	
+	void CleanTemp()
+	{
+		
 	}
 }

@@ -1,6 +1,5 @@
 package lt.viko.eif.groupwork;
 
-import java.io.IOException;
 import java.io.InputStream;
 
 import javax.ws.rs.Consumes;
@@ -21,8 +20,9 @@ public class FileUploadService {
     public String uploadFile (
             @FormDataParam("file") InputStream uploadedInputStream,
             @FormDataParam("file") FormDataContentDisposition fileDetails,
-            @FormDataParam("id") String id) throws IOException 
-    {
-		return FileManager.saveFile(uploadedInputStream, fileDetails, id);
+            @FormDataParam("id") String id,
+            @FormDataParam("id") String password) throws Exception
+    {    	
+		return FileManager.saveFile(uploadedInputStream, fileDetails, id, password);
     }
 }

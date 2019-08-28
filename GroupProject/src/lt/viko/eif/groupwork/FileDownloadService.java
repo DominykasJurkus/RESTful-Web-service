@@ -1,7 +1,5 @@
 package lt.viko.eif.groupwork;
 
-import java.io.IOException;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -18,8 +16,8 @@ public class FileDownloadService {
     @Path("/download")
     @Consumes(MediaType.TEXT_PLAIN)
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
-    public Response getTextFile(String id) throws IOException  
+    public Response getTextFile(String id) throws Exception  
     {
-		return FileManager.downloadFilebyID(id);
+		return FileManager.downloadFile(id);
     }
 }
