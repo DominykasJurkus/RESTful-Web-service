@@ -6,6 +6,12 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 
+/**
+ * *
+ * @author Gytis Bartkus, Dominykas jurkus
+ * Class used to receive clients IP address
+ *
+ */
 
 @Path("/user")
 public class ClientAddressReceive {
