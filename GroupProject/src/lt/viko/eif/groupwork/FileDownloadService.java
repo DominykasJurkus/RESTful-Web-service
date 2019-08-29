@@ -9,6 +9,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+/**
+*
+* Class used for file downloading
+*/
+
 @Path("/files")
 public class FileDownloadService {
 
