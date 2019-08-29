@@ -25,11 +25,27 @@ import com.mongodb.gridfs.GridFS;
 import com.mongodb.gridfs.GridFSDBFile;
 import com.mongodb.gridfs.GridFSInputFile;
 
+/**
+ *
+ * Class used for file managing
+ */
+
 public class FileManager {
 	
 	//Gets file from uploadFile function and saves it to a folder
 	public static String saveFile(InputStream uploadedInputStream, FormDataContentDisposition fileDetails, String id, String password) throws Exception
 	{
+
+/**
+		   * Method that allows us to upload file to database by ID
+		   *
+		   * @param id  allows us to find files by ID
+		   * @param uploadedInputStream 
+		   * @param fileDetails
+		   * @param password string, which we use for file encryption
+		   * @return Saves file to database
+		   */
+
 		//Temp save directory
 		String uploadedFileLocation = "C:/Users/Dominykas Jurkus/Desktop/temp/"  + "FileToEncrypt.txt";
 		
@@ -62,6 +78,13 @@ public class FileManager {
 	
 	public static Response downloadFile(String id, String password, String IPaddress) throws Exception
 	{	
+			/**
+		   * Method that allows to download file from database by ID
+		   *
+		   * @param id ID string, which allows us to find files by ID
+		   * @return exception
+		   */
+		   
 		Response response = null;
 		String fileName = FileEncryption.decryptFile(downloadFileFromDatabaseByIDToTemp(id), password);
 		
@@ -95,6 +118,14 @@ public class FileManager {
 
 	public static String saveFileToDatabase(FormDataContentDisposition fileDetails, String id) throws Exception
 	{	
+				/**
+		   * Method that allows to save file to database by ID
+		   *
+		   * @param id ID string, which allows us to find files by ID\
+		   * @param fileDetails gets details such as filename
+		   * @return response, that file has been uploaded
+		   */
+		
 		try {
 			MongoClient mongoClient = new MongoClient("localhost", 27017);
 			
@@ -148,6 +179,14 @@ public class FileManager {
 	
 	public static String downloadFileFromDatabaseByIDToTemp(String id)
 	{
+			/**
+		   * Method that allows to download file from database by ID
+		   *
+		   * @param id ID string, which allows us to find files by ID
+		   * @return the file, found by ID
+		   */
+
+
 		try {
 			MongoClient mongoClient = new MongoClient("localhost", 27017);
 			DB mongoDB = mongoClient.getDB("groupproject");
@@ -205,8 +244,4 @@ public class FileManager {
 		}
 	}
 	
-	void CleanTemp()
-	{
-		
-	}
 }
