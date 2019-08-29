@@ -14,8 +14,21 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
+/**
+ * *
+ * @author Gytis Bartkus, Dominykas jurkus
+ * Class used for file encryption and decryption
+ *
+ */
+
 class FileEncryption {
 	
+	 /**
+	   * Method that encrypts file
+	   *
+	   * @param password string, that is used for file encryption
+	   */
+
 	public static void encryptFile(String password) throws Exception {
 		
 		File fileIn = new File("C:/Users/Dominykas Jurkus/Desktop/temp/FileToEncrypt.txt");
@@ -67,6 +80,13 @@ class FileEncryption {
 		outFile.flush();
 		outFile.close();
 	}
+
+	 /**
+	   * Method that decrypts file
+	   *
+	   * @param fileName string of file name
+	   * @return the decrypted file
+	   */
 	
 	public static String decryptFile(String fileName, String password) throws Exception {
 
