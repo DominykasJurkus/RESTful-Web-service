@@ -21,7 +21,7 @@ public class FileUploadService {
             @FormDataParam("file") InputStream uploadedInputStream,
             @FormDataParam("file") FormDataContentDisposition fileDetails,
             @FormDataParam("id") String id,
-            @FormDataParam("id") String password) throws Exception
+            @FormDataParam("password") String password) throws Exception
     {    	
 		return FileManager.saveFile(uploadedInputStream, fileDetails, id, password);
     }

@@ -68,16 +68,14 @@ class FileEncryption {
 		outFile.close();
 	}
 	
-	public static String decryptFile(String fileName) throws Exception {
+	public static String decryptFile(String fileName, String password) throws Exception {
 
 		if(fileName == null)
 		{
 			return null;
 		}
 		else 
-		{	
-			String password = "qwerty";
-			
+		{				
 			FileInputStream saltFis = new FileInputStream("salt.enc");
 			byte[] salt = new byte[8];
 			saltFis.read(salt);

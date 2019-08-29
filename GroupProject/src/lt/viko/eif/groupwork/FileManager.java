@@ -60,25 +60,34 @@ public class FileManager {
 		return FileManager.saveFileToDatabase(fileDetails, id);
 	}
 	
-	public static Response downloadFile(String id) throws Exception
+	public static Response downloadFile(String id, String password, String IPaddress) throws Exception
 	{	
 		Response response = null;
-		String fileName = FileEncryption.decryptFile(downloadFileFromDatabaseByIDToTemp(id));
+		String fileName = FileEncryption.decryptFile(downloadFileFromDatabaseByIDToTemp(id), password);
+		
+		String IP = "0:0:0:0:0:0:0:1";
 		
 		if(fileName == null)
 		{
 			response = Response.status(404).
-					entity(" Unable to get file with ID: " + id).
+					entity("File Name can not be empty").
 					type("text/plain").
 					build();
 		}
-		else
+		else if(IPaddress.equals(IP))
 		{
 			File file = new File("C:/Users/Dominykas Jurkus/Desktop/temp/downloaded - " + fileName);
 			 
 	        ResponseBuilder builder = Response.ok((Object) file);
 	        builder.header("Content-Disposition", "attachment; filename=\"test_text_file.txt\"");
 	        response = builder.build();
+		}
+		else
+		{
+			response = Response.status(500).
+					entity("Wrong IP address").
+					type("text/plain").
+					build();
         }
 		
 		return response;
